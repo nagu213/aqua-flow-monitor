@@ -49,8 +49,34 @@ export function WaterTank({ level, pumpOn, sumpLevel = 70 }: WaterTankProps) {
     return points.join(" ");
   };
 
+  // Sump (underground) geometry
+  const sumpX = 60;
+  const sumpY = 620;
+  const sumpW = 380;
+  const sumpH = 140;
+  const sumpPad = 6;
+  const sumpWaterMaxH = sumpH - sumpPad * 2;
+  const sumpWaterH = sumpWaterMaxH * (sumpLevel / 100);
+  const sumpWaterY = sumpY + sumpH - sumpPad - sumpWaterH;
+
+  const buildSumpWave = (offset: number, amp: number, freq: number) => {
+    const points: string[] = [];
+    const segs = 50;
+    const x0 = sumpX + sumpPad;
+    const x1 = sumpX + sumpW - sumpPad;
+    for (let i = 0; i <= segs; i++) {
+      const x = x0 + (i / segs) * (x1 - x0);
+      const y = sumpWaterY + Math.sin((i / segs) * Math.PI * freq + offset) * amp
+              + Math.cos((i / segs) * Math.PI * (freq * 1.7) + offset * 1.3) * (amp * 0.4);
+      points.push(`${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`);
+    }
+    points.push(`L ${x1} ${sumpY + sumpH - sumpPad}`);
+    points.push(`L ${x0} ${sumpY + sumpH - sumpPad} Z`);
+    return points.join(" ");
+  };
+
   return (
-    <svg viewBox="0 0 500 560" className="w-full max-w-xl drop-shadow-2xl">
+    <svg viewBox="0 0 500 800" className="w-full max-w-xl drop-shadow-2xl">
       <defs>
         {/* Realistic water gradient */}
         <linearGradient id="waterDeep" x1="0" y1="0" x2="0" y2="1">
