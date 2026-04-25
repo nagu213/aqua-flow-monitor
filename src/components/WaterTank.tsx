@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 
 interface WaterTankProps {
-  level: number; // 0-100
+  level: number; // 0-100 overhead
   pumpOn: boolean;
+  sumpLevel?: number; // 0-100 underground sump
 }
 
-export function WaterTank({ level, pumpOn }: WaterTankProps) {
+export function WaterTank({ level, pumpOn, sumpLevel = 70 }: WaterTankProps) {
   const [waveOffset, setWaveOffset] = useState(0);
 
   useEffect(() => {
