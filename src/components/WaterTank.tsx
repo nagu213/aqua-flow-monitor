@@ -188,7 +188,7 @@ export function WaterTank({ level, pumpOn, sumpLevel = 70 }: WaterTankProps) {
       </defs>
 
       {/* Ground shadow under everything */}
-      <ellipse cx="250" cy="525" rx="200" ry="12" fill="url(#groundShadow)" />
+      <ellipse cx="250" cy="595" rx="200" ry="10" fill="url(#groundShadow)" opacity="0.6" />
 
       {/* ========= PIPING (behind tank) ========= */}
       {/* Vertical suction pipe from pump going up */}
