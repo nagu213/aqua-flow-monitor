@@ -77,7 +77,7 @@ function Index() {
 
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <Card className="p-6 flex justify-center bg-card/60 backdrop-blur">
-            <WaterTank level={level} pumpOn={pumpOn} />
+            <WaterTank level={level} pumpOn={pumpOn} sumpLevel={sumpLevel} />
           </Card>
 
           <div className="space-y-5">
