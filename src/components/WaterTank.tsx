@@ -162,6 +162,25 @@ export function WaterTank({ level, pumpOn, sumpLevel = 70 }: WaterTankProps) {
         <clipPath id="tankClip">
           <rect x={tankX + innerPad} y={tankY + innerPad} width={tankW - innerPad * 2} height={tankH - innerPad * 2} rx="6" />
         </clipPath>
+        <clipPath id="sumpClip">
+          <rect x={sumpX + sumpPad} y={sumpY + sumpPad} width={sumpW - sumpPad * 2} height={sumpH - sumpPad * 2} rx="4" />
+        </clipPath>
+
+        {/* Soil / underground gradient */}
+        <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#6b4a2b" />
+          <stop offset="40%" stopColor="#4a3220" />
+          <stop offset="100%" stopColor="#2a1d12" />
+        </linearGradient>
+        <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#5fa84a" />
+          <stop offset="100%" stopColor="#3a7028" />
+        </linearGradient>
+        <linearGradient id="concreteWall" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#3a3a3a" />
+          <stop offset="50%" stopColor="#7a7a7a" />
+          <stop offset="100%" stopColor="#2a2a2a" />
+        </linearGradient>
 
         <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" />
