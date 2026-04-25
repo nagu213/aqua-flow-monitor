@@ -12,6 +12,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [level, setLevel] = useState(45);
+  const [sumpLevel, setSumpLevel] = useState(80);
   const [pumpOn, setPumpOn] = useState(true);
   const [autoMode, setAutoMode] = useState(true);
 
@@ -19,25 +20,36 @@ function Index() {
   useEffect(() => {
     const id = setInterval(() => {
       setLevel((prev) => {
-        if (pumpOn) {
+        if (pumpOn && sumpLevel > 2) {
           if (autoMode && prev >= 100) {
             setPumpOn(false);
             return 100;
           }
           return Math.min(100, prev + 0.5);
         } else {
-          // slow natural drain
+          // slow natural drain (consumption)
           return Math.max(0, prev - 0.15);
         }
       });
+
+      setSumpLevel((prev) => {
+        if (pumpOn && prev > 0) {
+          // sump drains slightly faster than overhead fills (pipe loss)
+          return Math.max(0, prev - 0.55);
+        }
+        // slow refill simulating municipal/borewell input
+        return Math.min(100, prev + 0.2);
+      });
     }, 200);
     return () => clearInterval(id);
-  }, [pumpOn, autoMode]);
+  }, [pumpOn, autoMode, sumpLevel]);
 
-  // Auto turn pump back on at low level
+  // Auto turn pump back on at low level (and only if sump has water)
   useEffect(() => {
-    if (autoMode && !pumpOn && level <= 20) setPumpOn(true);
-  }, [level, autoMode, pumpOn]);
+    if (autoMode && !pumpOn && level <= 20 && sumpLevel > 10) setPumpOn(true);
+    // Auto stop pump if sump dry to prevent dry-running
+    if (autoMode && pumpOn && sumpLevel <= 2) setPumpOn(false);
+  }, [level, sumpLevel, autoMode, pumpOn]);
 
   const status =
     level >= 95 ? "FULL" : level <= 15 ? "LOW" : pumpOn ? "FILLING" : "IDLE";
@@ -65,7 +77,7 @@ function Index() {
 
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <Card className="p-6 flex justify-center bg-card/60 backdrop-blur">
-            <WaterTank level={level} pumpOn={pumpOn} />
+            <WaterTank level={level} pumpOn={pumpOn} sumpLevel={sumpLevel} />
           </Card>
 
           <div className="space-y-5">
@@ -81,8 +93,14 @@ function Index() {
               </div>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Level</span>
+                  <span className="text-muted-foreground">Overhead Tank</span>
                   <span className="font-mono font-semibold">{level.toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Sump Tank</span>
+                  <span className={`font-mono font-semibold ${sumpLevel <= 10 ? "text-destructive" : "text-chart-2"}`}>
+                    {sumpLevel.toFixed(1)}%
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Pump</span>
@@ -122,11 +140,23 @@ function Index() {
 
               <div className="pt-2">
                 <label className="text-sm text-muted-foreground mb-2 block">
-                  Set Level Manually
+                  Overhead Tank Level
                 </label>
                 <Slider
                   value={[level]}
                   onValueChange={(v) => setLevel(v[0])}
+                  max={100}
+                  step={1}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">
+                  Sump Tank Level
+                </label>
+                <Slider
+                  value={[sumpLevel]}
+                  onValueChange={(v) => setSumpLevel(v[0])}
                   max={100}
                   step={1}
                 />
