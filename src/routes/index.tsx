@@ -101,6 +101,7 @@ function Index() {
                   <span className={`font-mono font-semibold ${sumpLevel <= 10 ? "text-destructive" : "text-chart-2"}`}>
                     {sumpLevel.toFixed(1)}%
                   </span>
+                </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Pump</span>
                   <span className={`font-mono font-semibold ${pumpOn ? "text-chart-2" : "text-muted-foreground"}`}>
