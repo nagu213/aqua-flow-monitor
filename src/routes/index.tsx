@@ -12,6 +12,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [level, setLevel] = useState(45);
+  const [sumpLevel, setSumpLevel] = useState(80);
   const [pumpOn, setPumpOn] = useState(true);
   const [autoMode, setAutoMode] = useState(true);
 
@@ -19,25 +20,36 @@ function Index() {
   useEffect(() => {
     const id = setInterval(() => {
       setLevel((prev) => {
-        if (pumpOn) {
+        if (pumpOn && sumpLevel > 2) {
           if (autoMode && prev >= 100) {
             setPumpOn(false);
             return 100;
           }
           return Math.min(100, prev + 0.5);
         } else {
-          // slow natural drain
+          // slow natural drain (consumption)
           return Math.max(0, prev - 0.15);
         }
       });
+
+      setSumpLevel((prev) => {
+        if (pumpOn && prev > 0) {
+          // sump drains slightly faster than overhead fills (pipe loss)
+          return Math.max(0, prev - 0.55);
+        }
+        // slow refill simulating municipal/borewell input
+        return Math.min(100, prev + 0.2);
+      });
     }, 200);
     return () => clearInterval(id);
-  }, [pumpOn, autoMode]);
+  }, [pumpOn, autoMode, sumpLevel]);
 
-  // Auto turn pump back on at low level
+  // Auto turn pump back on at low level (and only if sump has water)
   useEffect(() => {
-    if (autoMode && !pumpOn && level <= 20) setPumpOn(true);
-  }, [level, autoMode, pumpOn]);
+    if (autoMode && !pumpOn && level <= 20 && sumpLevel > 10) setPumpOn(true);
+    // Auto stop pump if sump dry to prevent dry-running
+    if (autoMode && pumpOn && sumpLevel <= 2) setPumpOn(false);
+  }, [level, sumpLevel, autoMode, pumpOn]);
 
   const status =
     level >= 95 ? "FULL" : level <= 15 ? "LOW" : pumpOn ? "FILLING" : "IDLE";
