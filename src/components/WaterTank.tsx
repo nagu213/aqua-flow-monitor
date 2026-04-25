@@ -475,9 +475,86 @@ export function WaterTank({ level, pumpOn, sumpLevel = 70 }: WaterTankProps) {
       {/* Pump-side suction connection (small vertical pipe from pump up to suction line) */}
       <rect x="22" y="500" width="22" height="30" fill="url(#pipeMetal)" />
 
-      {/* Ground line */}
-      <line x1="0" y1="535" x2="500" y2="535" stroke="#1a1f26" strokeWidth="2" />
-      <line x1="0" y1="540" x2="500" y2="540" stroke="#1a1f26" strokeWidth="1" opacity="0.4" />
+      {/* ===== GROUND SURFACE ===== */}
+      {/* Soil cross-section */}
+      <rect x="0" y="600" width="500" height="200" fill="url(#soil)" />
+      {/* Grass strip */}
+      <rect x="0" y="595" width="500" height="10" fill="url(#grass)" />
+      <line x1="0" y1="600" x2="500" y2="600" stroke="#1a1f26" strokeWidth="1.5" />
+      {/* Soil texture dots */}
+      {[
+        [30, 660], [80, 700], [140, 650], [180, 720], [240, 680],
+        [300, 710], [360, 665], [420, 695], [470, 740], [60, 760],
+        [200, 770], [340, 755], [450, 640], [110, 780], [380, 780],
+      ].map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r="1.8" fill="#2a1d12" opacity="0.7" />
+      ))}
+
+      {/* ===== UNDERGROUND SUMP TANK ===== */}
+      {/* Concrete walls (outer) */}
+      <rect x={sumpX - 10} y={sumpY - 10} width={sumpW + 20} height={sumpH + 20} rx="6" fill="url(#concreteWall)" stroke="#1a1f26" strokeWidth="2" />
+      {/* Inner cavity */}
+      <rect x={sumpX} y={sumpY} width={sumpW} height={sumpH} rx="4" fill="#0a1820" stroke="#0a0e14" strokeWidth="1.5" />
+
+      {/* Sump water */}
+      <g clipPath="url(#sumpClip)">
+        <path d={buildSumpWave(waveOffset * 0.8, 3, 4)} fill="url(#waterDeep)" />
+        <path d={buildSumpWave(waveOffset * 0.8, 3, 4)} fill="url(#waterSurface)" style={{ mixBlendMode: "screen" }} />
+        <path d={buildSumpWave(waveOffset * 1.1 + 1, 2, 6)} fill="#4fb3d9" opacity="0.25" />
+        <ellipse cx={sumpX + sumpW * 0.3} cy={sumpWaterY + 1.5} rx={sumpW * 0.15} ry="1.5" fill="#ffffff" opacity="0.5" />
+        <ellipse cx={sumpX + sumpW * 0.7} cy={sumpWaterY + 2} rx={sumpW * 0.1} ry="1" fill="#ffffff" opacity="0.35" />
+
+        {/* Suction ripples when pump on */}
+        {pumpOn && sumpLevel > 5 && (
+          <>
+            <circle cx="46" cy={sumpWaterY} r="4" fill="none" stroke="#aee3f5" strokeWidth="1.5" opacity="0.7">
+              <animate attributeName="r" values="2;18;2" dur="1.4s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.8;0;0.8" dur="1.4s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="46" cy={sumpWaterY} r="4" fill="none" stroke="#aee3f5" strokeWidth="1.2" opacity="0.5">
+              <animate attributeName="r" values="2;14;2" dur="1.6s" begin="0.4s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.6;0;0.6" dur="1.6s" begin="0.4s" repeatCount="indefinite" />
+            </circle>
+          </>
+        )}
+      </g>
+
+      {/* Suction pipe extending down through soil into sump */}
+      <rect x="35" y="530" width="22" height={sumpY + sumpH - 535} fill="url(#pipeMetal)" />
+      {/* Foot valve / strainer at pipe end inside sump */}
+      <rect x="30" y={sumpY + sumpH - 30} width="32" height="22" rx="3" fill="#3a4250" stroke="#0a0e14" strokeWidth="1.2" />
+      {[0, 1, 2, 3].map((i) => (
+        <line key={i} x1={32 + i * 8} y1={sumpY + sumpH - 28} x2={32 + i * 8} y2={sumpY + sumpH - 10} stroke="#0a0e14" strokeWidth="1" />
+      ))}
+
+      {/* Animated suction flow upward in underground pipe */}
+      {pumpOn && sumpLevel > 5 && (
+        <line x1="46" y1={sumpY + sumpH - 20} x2="46" y2="530" stroke="#4fb3d9" strokeWidth="10" strokeDasharray="14 14" opacity="0.7">
+          <animate attributeName="stroke-dashoffset" from="0" to="-28" dur="0.6s" repeatCount="indefinite" />
+        </line>
+      )}
+
+      {/* Sump access hatch on ground */}
+      <rect x={sumpX + sumpW / 2 - 30} y="588" width="60" height="14" rx="2" fill="url(#tankCap)" stroke="#0a0e14" strokeWidth="1.2" />
+      {[0, 1, 2, 3].map((i) => (
+        <circle key={i} cx={sumpX + sumpW / 2 - 24 + i * 16} cy="595" r="2" fill="#5a6470" stroke="#0a0e14" strokeWidth="0.4" />
+      ))}
+
+      {/* Sump label */}
+      <text x={sumpX + sumpW - 10} y={sumpY + 18} fontSize="11" textAnchor="end" fill="#aee3f5" fontFamily="monospace" fontWeight="bold" opacity="0.85">
+        SUMP {sumpLevel.toFixed(0)}%
+      </text>
+
+      {/* Sump level marks (left side) */}
+      {[0, 50, 100].map((m) => {
+        const y = sumpY + sumpH - sumpPad - (sumpWaterMaxH * m) / 100;
+        return (
+          <g key={m}>
+            <line x1={sumpX + 4} y1={y} x2={sumpX + 16} y2={y} stroke="#aee3f5" strokeWidth="1" opacity="0.7" />
+            <text x={sumpX + 20} y={y + 3} fontSize="8" fill="#aee3f5" fontFamily="monospace" opacity="0.7">{m}</text>
+          </g>
+        );
+      })}
     </svg>
   );
 }
