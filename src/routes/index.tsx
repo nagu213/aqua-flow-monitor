@@ -156,17 +156,19 @@ function Index() {
                 />
               </div>
 
-              <div>
-                <label className="text-sm text-muted-foreground mb-2 block">
-                  Sump Tank Level
-                </label>
-                <Slider
-                  value={[sumpLevel]}
-                  onValueChange={(v) => setSumpLevel(v[0])}
-                  max={100}
-                  step={1}
-                />
-              </div>
+              {withSump && (
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">
+                    Sump Tank Level
+                  </label>
+                  <Slider
+                    value={[sumpLevel]}
+                    onValueChange={(v) => setSumpLevel(v[0])}
+                    max={100}
+                    step={1}
+                  />
+                </div>
+              )}
             </Card>
           </div>
         </div>
