@@ -12,6 +12,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { shape, withSump } = useTankSelection();
   const [level, setLevel] = useState(45);
   const [sumpLevel, setSumpLevel] = useState(80);
   const [pumpOn, setPumpOn] = useState(true);
