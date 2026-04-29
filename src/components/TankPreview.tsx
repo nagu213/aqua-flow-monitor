@@ -207,7 +207,7 @@ export function TankPreview({
       <g pointerEvents="none">
         <ShapePath shape={shape} fill={`url(#${ids.glass})`} />
         <ShapePath shape={shape} fill="none" stroke="#1a2530" strokeWidth={3} />
-        <ShapePath shape={shape} fill="none" stroke="#fff" strokeOpacity="0.07" strokeWidth={1} inset={4} />
+        <ShapePath shape={shape} fill="none" stroke="#fff" strokeOpacity={0.07} strokeWidth={1} inset={4} />
       </g>
 
       {/* Top rim plate with bolts */}
