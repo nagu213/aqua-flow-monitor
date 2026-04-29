@@ -1,16 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { WaterTank } from "@/components/WaterTank";
+import { TankPreview } from "@/components/TankPreview";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
-import { Power, Droplet, Gauge } from "lucide-react";
+import { Power, Droplet, Gauge, LayoutGrid } from "lucide-react";
+import { useTankSelection } from "@/hooks/useTankSelection";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  const { shape, withSump } = useTankSelection();
   const [level, setLevel] = useState(45);
   const [sumpLevel, setSumpLevel] = useState(80);
   const [pumpOn, setPumpOn] = useState(true);
@@ -73,11 +75,15 @@ function Index() {
           <p className="text-muted-foreground mt-2">
             Real-time tank level with motor pump control
           </p>
+          <Link to="/templates" className="mt-3 inline-flex items-center gap-2 text-sm text-primary underline-offset-4 hover:underline">
+            <LayoutGrid className="h-4 w-4" />
+            Browse 10 tank designs
+          </Link>
         </header>
 
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <Card className="p-6 flex justify-center bg-card/60 backdrop-blur">
-            <WaterTank level={level} pumpOn={pumpOn} sumpLevel={sumpLevel} />
+            <TankPreview shape={shape} level={level} pumpOn={pumpOn} withSump={withSump} sumpLevel={sumpLevel} />
           </Card>
 
           <div className="space-y-5">
@@ -96,12 +102,14 @@ function Index() {
                   <span className="text-muted-foreground">Overhead Tank</span>
                   <span className="font-mono font-semibold">{level.toFixed(1)}%</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Sump Tank</span>
-                  <span className={`font-mono font-semibold ${sumpLevel <= 10 ? "text-destructive" : "text-chart-2"}`}>
-                    {sumpLevel.toFixed(1)}%
-                  </span>
-                </div>
+                {withSump && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Sump Tank</span>
+                    <span className={`font-mono font-semibold ${sumpLevel <= 10 ? "text-destructive" : "text-chart-2"}`}>
+                      {sumpLevel.toFixed(1)}%
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Pump</span>
                   <span className={`font-mono font-semibold ${pumpOn ? "text-chart-2" : "text-muted-foreground"}`}>
@@ -150,17 +158,19 @@ function Index() {
                 />
               </div>
 
-              <div>
-                <label className="text-sm text-muted-foreground mb-2 block">
-                  Sump Tank Level
-                </label>
-                <Slider
-                  value={[sumpLevel]}
-                  onValueChange={(v) => setSumpLevel(v[0])}
-                  max={100}
-                  step={1}
-                />
-              </div>
+              {withSump && (
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">
+                    Sump Tank Level
+                  </label>
+                  <Slider
+                    value={[sumpLevel]}
+                    onValueChange={(v) => setSumpLevel(v[0])}
+                    max={100}
+                    step={1}
+                  />
+                </div>
+              )}
             </Card>
           </div>
         </div>
