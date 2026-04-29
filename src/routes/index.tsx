@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { WaterTank } from "@/components/WaterTank";
+import { TankPreview } from "@/components/TankPreview";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
-import { Power, Droplet, Gauge } from "lucide-react";
+import { Power, Droplet, Gauge, LayoutGrid } from "lucide-react";
+import { useTankSelection } from "@/hooks/useTankSelection";
 
 export const Route = createFileRoute("/")({
   component: Index,
