@@ -75,11 +75,15 @@ function Index() {
           <p className="text-muted-foreground mt-2">
             Real-time tank level with motor pump control
           </p>
+          <Link to="/templates" className="mt-3 inline-flex items-center gap-2 text-sm text-primary underline-offset-4 hover:underline">
+            <LayoutGrid className="h-4 w-4" />
+            Browse 10 tank designs
+          </Link>
         </header>
 
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <Card className="p-6 flex justify-center bg-card/60 backdrop-blur">
-            <WaterTank level={level} pumpOn={pumpOn} sumpLevel={sumpLevel} />
+            <TankPreview shape={shape} level={level} pumpOn={pumpOn} withSump={withSump} sumpLevel={sumpLevel} />
           </Card>
 
           <div className="space-y-5">
