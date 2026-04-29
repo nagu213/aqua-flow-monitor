@@ -102,12 +102,14 @@ function Index() {
                   <span className="text-muted-foreground">Overhead Tank</span>
                   <span className="font-mono font-semibold">{level.toFixed(1)}%</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Sump Tank</span>
-                  <span className={`font-mono font-semibold ${sumpLevel <= 10 ? "text-destructive" : "text-chart-2"}`}>
-                    {sumpLevel.toFixed(1)}%
-                  </span>
-                </div>
+                {withSump && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Sump Tank</span>
+                    <span className={`font-mono font-semibold ${sumpLevel <= 10 ? "text-destructive" : "text-chart-2"}`}>
+                      {sumpLevel.toFixed(1)}%
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Pump</span>
                   <span className={`font-mono font-semibold ${pumpOn ? "text-chart-2" : "text-muted-foreground"}`}>
